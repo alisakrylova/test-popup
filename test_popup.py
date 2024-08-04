@@ -9,7 +9,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 @pytest.fixture(scope="module")
 def driver():
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    driver = webdriver.Remote("http://chrome:4444/wd/hub", options=options)
     yield driver
     driver.quit()
 

@@ -1,0 +1,32 @@
+name: test-popup
+
+services:
+  chrome:
+    image: selenium/standalone-chrome:latest
+    container_name: chrome
+    privileged: true
+    shm_size: 2g
+    ports:
+      - "4444:4444"
+      - "7900:7900"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/bin/check-grid.sh",
+          "--host",
+          "0.0.0.0",
+          "--port",
+          "4444"
+        ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+  python:
+    build: .
+    image: python-pytest
+    container_name: pytest
+    depends_on:
+      chrome:
+        condition: service_healthy
+    command: [ "pytest", "-s", "test_popup.py" ]
